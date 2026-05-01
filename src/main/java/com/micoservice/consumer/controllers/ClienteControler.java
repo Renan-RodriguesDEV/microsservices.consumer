@@ -1,22 +1,16 @@
 package com.micoservice.consumer.controllers;
 
-import java.util.List;
-
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.micoservice.consumer.model.Cliente;
 import com.micoservice.consumer.services.ClienteService;
+import com.micoservice.consumer.dto.ClienteDTO;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping("clientes")
 public class ClienteControler {
     private final ClienteService clienteService;
     private final RabbitTemplate rabbitTemplate;
@@ -28,7 +22,7 @@ public class ClienteControler {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     public Cliente get(@PathVariable Long id) {
         return clienteService.findById(id);
     }
@@ -39,19 +33,19 @@ public class ClienteControler {
     }
 
     @PostMapping
-    public Cliente post(Cliente cliente) {
+    public Cliente post(ClienteDTO cliente) {
         Cliente cliente_db = clienteService.create(cliente);
-        rabbitTemplate.convertAndSend("", routingKey, cliente);
+        rabbitTemplate.convertAndSend("", routingKey, cliente.nome());
         return cliente_db;
 
     }
 
-    @PutMapping("/{id}")
-    public Cliente put(Long id, Cliente cliente) {
+    @PutMapping("{id}")
+    public Cliente put(Long id, ClienteDTO cliente) {
         return clienteService.update(id, cliente);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("{id}")
     public void delete(Long id) {
         clienteService.deleteById(id);
     }

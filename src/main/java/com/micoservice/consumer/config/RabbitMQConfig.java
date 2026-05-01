@@ -1,4 +1,4 @@
-package com.micoservice.config;
+package com.micoservice.consumer.config;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
@@ -24,12 +24,12 @@ public class RabbitMQConfig {
         return new Queue(queue, true);
     }
 
-    @Bean
-    public JacksonJsonMessageConverter jsonMessageConverter() {
-        // criando o conversor de mensagens, para converter os objetos em JSON e
-        // vice-versa, para isso é necessário adicionar a dependência do Jackson no
-        // pom.xml
-        JsonMapper mapper = new JsonMapper();
-        return new JacksonJsonMessageConverter(mapper);
-    }
+//    @Bean
+//    public JacksonJsonMessageConverter jsonMessageConverter() {
+//        // criando o conversor de mensagens, para converter os objetos em JSON e
+//        // vice-versa, para isso é necessário adicionar a dependência do Jackson no
+//        // pom.xml
+//        JsonMapper mapper = new JsonMapper();
+//        return new JacksonJsonMessageConverter(mapper);
+//    }
 }
