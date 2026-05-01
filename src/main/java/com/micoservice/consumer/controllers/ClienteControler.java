@@ -1,8 +1,8 @@
 package com.micoservice.consumer.controllers;
 
+import com.micoservice.consumer.dto.ClienteDTO;
 import com.micoservice.consumer.model.Cliente;
 import com.micoservice.consumer.services.ClienteService;
-import com.micoservice.consumer.dto.ClienteDTO;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -24,11 +24,14 @@ public class ClienteControler {
 
     @GetMapping("{id}")
     public Cliente get(@PathVariable Long id) {
+
         return clienteService.findById(id);
     }
 
     @GetMapping
     public List<Cliente> get() {
+
+        rabbitTemplate.convertAndSend("", routingKey, "Alguem chamou");
         return clienteService.findAll();
     }
 

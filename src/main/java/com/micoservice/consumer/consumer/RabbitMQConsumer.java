@@ -1,5 +1,6 @@
 package com.micoservice.consumer.consumer;
 
+import com.micoservice.consumer.dto.Pagamento;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
@@ -11,5 +12,16 @@ public class RabbitMQConsumer {
     @RabbitListener(queues = "${broker.queue.processamento.name}")
     public void listenerQueue(@Payload String message) {
         System.out.println("Mensagem recebida: " + message);
+        switch (message.toLowerCase().trim()){
+            case "pago":
+                System.out.println("Pedido pago");
+                break;
+            case "em andamento":
+                System.out.println("Pedido em andamento");
+                break;
+            default:
+                System.out.println("Pedido pendente");;
+        }
+
     }
 }
