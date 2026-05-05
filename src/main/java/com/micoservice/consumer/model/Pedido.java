@@ -1,6 +1,6 @@
 package com.micoservice.consumer.model;
 
-import com.micoservice.consumer.dto.Pagamento;
+import com.micoservice.consumer.dto.PagamentoEnum;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -11,7 +11,8 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String descricao;
-    private Pagamento pagamento;
+    @Enumerated(EnumType.STRING)
+    private PagamentoEnum pagamento;
 
     // Um pedido pertence a um cliente, ou seja, um cliente pode ter muitos pedidos,
     // mas um pedido só pode pertencer a um cliente. O cascade = CascadeType.ALL é

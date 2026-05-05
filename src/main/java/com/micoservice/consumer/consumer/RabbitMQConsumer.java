@@ -1,6 +1,6 @@
 package com.micoservice.consumer.consumer;
 
-import com.micoservice.consumer.dto.Pagamento;
+import com.micoservice.consumer.dto.PagamentoEnum;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;

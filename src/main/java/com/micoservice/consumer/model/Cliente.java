@@ -11,6 +11,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.micoservice.consumer.dto.RoleEnum;
+
 @Entity
 public class Cliente implements UserDetails {
     @Id
@@ -19,7 +21,7 @@ public class Cliente implements UserDetails {
     @Column(name = "nome", length = 255)
     private String name;
     private String password;
-    private String role;
+    private RoleEnum role;
     // Um cliente pode ter muitos pedidos.
     @OneToMany
     private List<Pedido> pedidos;
@@ -93,12 +95,18 @@ public class Cliente implements UserDetails {
             this.updated_at = LocalDate.now();
         }
     }
-
+    public RoleEnum getRole() {
+        return role;
+    }
+    public void setRole(RoleEnum role) {
+        this.role = role;
+    }
+    
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // se for admin, retorna as roles de admin e user, caso contrário, retorna
         // apenas a role de user
-        if (this.role == "ADMIN")
+        if (this.role == RoleEnum.ADMIN)
             return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
