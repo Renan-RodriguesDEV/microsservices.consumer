@@ -3,15 +3,23 @@ package com.micoservice.consumer.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 @Entity
-public class Cliente {
+public class Cliente implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "nome", length = 255)
     private String name;
+    private String password;
+    private String role;
     // Um cliente pode ter muitos pedidos.
     @OneToMany
     private List<Pedido> pedidos;
@@ -33,6 +41,11 @@ public class Cliente {
 
     public Cliente(String name) {
         this.name = name;
+    }
+
+    public Cliente(String name, String password) {
+        this.name = name;
+        this.password = password;
     }
 
     public Long getId() {
@@ -79,6 +92,25 @@ public class Cliente {
         if (this.updated_at == null) {
             this.updated_at = LocalDate.now();
         }
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // se for admin, retorna as roles de admin e user, caso contrário, retorna
+        // apenas a role de user
+        if (this.role == "ADMIN")
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    @Override
+    public @Nullable String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.name;
     }
 
 }

@@ -12,7 +12,7 @@ public class RabbitMQConsumer {
     @RabbitListener(queues = "${broker.queue.processamento.name}")
     public void listenerQueue(@Payload String message) {
         System.out.println("Mensagem recebida: " + message);
-        switch (message.toLowerCase().trim()){
+        switch (message.toLowerCase().trim()) {
             case "pago":
                 System.out.println("Pedido pago");
                 break;
@@ -20,7 +20,7 @@ public class RabbitMQConsumer {
                 System.out.println("Pedido em andamento");
                 break;
             default:
-                System.out.println("Pedido pendente");;
+                System.out.println("Pedido pendente");
         }
 
     }
