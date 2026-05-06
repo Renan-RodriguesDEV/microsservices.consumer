@@ -1,14 +1,15 @@
 package com.micoservice.consumer.security;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-import org.springframework.beans.factory.annotation.Value;
-
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-
+@Service
 public class TokenService {
 
     @Value("${jwt.secret}")
@@ -21,12 +22,12 @@ public class TokenService {
         // Gerar o token JWT com o nome de usuário como claim
         String token = JWT.create()
                 .withIssuer("nome-issue") // quem emitiu o token, pode ser o nome da sua aplicação ou qualquer
-                                          // identificador
+                // identificador
                 .withSubject(username) // quem é o dono do token, ou seja, o nome do usuário
                 .withExpiresAt(generateExpirationDate()) // data de expiração do token, pode ser null para não expirar
-                                                         // ou você pode definir um tempo específico
+                // ou você pode definir um tempo específico
                 .sign(algorithm); // assinar o token usando o algoritmo criado, isso vai gerar a string do token
-                                  // JWT
+        // JWT
         return token;
     }
 
@@ -34,7 +35,7 @@ public class TokenService {
     public String validadeToken(String token) {
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
         String username = JWT.require(algorithm) // criar um verificador de token usando o mesmo algoritmo, isso vai
-                                                 // validar a assinatura do token
+                // validar a assinatura do token
                 .withIssuer("nome-issue")
                 .build() // construir o verificador
                 .verify(token).getSubject(); // verificar o token e pegar o nome de usuário do claim "sub" (subject)

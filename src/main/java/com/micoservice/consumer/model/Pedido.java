@@ -15,17 +15,14 @@ public class Pedido {
     private PagamentoEnum pagamento;
 
     // Um pedido pertence a um cliente, ou seja, um cliente pode ter muitos pedidos,
-    // mas um pedido só pode pertencer a um cliente. O cascade = CascadeType.ALL é
-    // usado para dizer que quando um cliente for deletado, todos os pedidos
-    // relacionados a ele também serão deletados, ou seja, ele vai fazer um cascade
-    // delete, ou seja, ele vai deletar todos os pedidos relacionados ao cliente que
-    // foi deletado.
-    @ManyToOne(cascade = CascadeType.ALL)
+    // mas um pedido só pode pertencer a um cliente. Não usamos cascade aqui porque
+    // não queremos deletar o cliente quando um pedido for deletado.
+    @ManyToOne(fetch = FetchType.LAZY)
     // a anotação @JoinColumn é usada para especificar a coluna que será usada para
     // fazer a junção entre as tabelas, nesse caso, a coluna cliente_id na tabela
     // pedido vai ser usada para fazer a junção com a tabela cliente, ou seja, ela
     // vai ser a chave estrangeira que vai referenciar o cliente dono do pedido.
-    @JoinColumn(name = "cliente_id")
+    @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
     private LocalDate created_at;

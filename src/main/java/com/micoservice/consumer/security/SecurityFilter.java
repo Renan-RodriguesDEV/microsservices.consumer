@@ -36,20 +36,25 @@ public class SecurityFilter extends OncePerRequestFilter {
         // se o token for diferente de null, ou seja, se o token existir, validar o
         // token e
         if (token != null) {
-            // validar o token
-            String name = tokenService.validadeToken(token);
-            // Pega o cliente do banco de dados usando o nome do usuário extraído do token
-            UserDetails userDetails = clienteRepository.findByName(name);
-            // Criar um objeto de autenticação do Spring Security usando o nome de usuário e
-            // o objeto UserDetails do cliente, isso vai ser usado para dizer que o usuário
-            // está autenticado e quais são suas roles/permissões
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(name,
-                    userDetails);
-            // definir o objeto de autenticação no contexto de segurança do Spring Security,
-            // isso vai permitir que o Spring Security reconheça o usuário como autenticado
-            // e permita o acesso aos recursos protegidos com base nas roles/permissões do
-            // usuário
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            try {
+                // validar o token
+                String name = tokenService.validadeToken(token);
+                // Pega o cliente do banco de dados usando o nome do usuário extraído do token
+                UserDetails userDetails = clienteRepository.findByName(name);
+                if (userDetails != null) {
+                    // Criar um objeto de autenticação do Spring Security corretamente:
+                    // - principal: nome do usuário
+                    // - credentials: null (pois já foi autenticado via token)
+                    // - authorities: permissões do usuário
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    // definir o objeto de autenticação no contexto de segurança do Spring Security
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (Exception e) {
+                // Se o token for inválido, continua sem autenticação
+                return;
+            }
         }
         // se for null, ou seja, se o token não existir, simplesmente continuar com a
         // cadeia de filtros sem fazer nada, ou seja, o usuário não estará autenticado e
@@ -61,8 +66,9 @@ public class SecurityFilter extends OncePerRequestFilter {
         // pegar o token do header Authorization, o token geralmente é enviado no
         // formato "Bearer <token>", então é necessário remover o prefixo "Bearer " para
         // obter apenas o token
-        String header = request.getHeader("Authorization").replace("Bearer", "");
-        return header != null ? header.trim() : null; // remover espaços em branco do token, caso haja, retorna null se
-                                                      // o header for nulo ou vazio (operador ternário)
+        String header = request.getHeader("Authorization");
+        if (header == null || !header.startsWith("Bearer "))
+            return null;
+        return header.replace("Bearer ", "");
     }
 }

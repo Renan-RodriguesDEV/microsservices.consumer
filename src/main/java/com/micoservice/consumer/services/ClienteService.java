@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.micoservice.consumer.dto.ClienteDTO;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.micoservice.consumer.model.Cliente;
@@ -13,11 +13,11 @@ import com.micoservice.consumer.repositories.ClienteRepository;
 @Service
 public class ClienteService {
     private final ClienteRepository clienteReporitory;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public ClienteService(ClienteRepository clienteReporitory, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public ClienteService(ClienteRepository clienteReporitory, PasswordEncoder passwordEncoder) {
         this.clienteReporitory = clienteReporitory;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<Cliente> findAll() {
@@ -29,8 +29,9 @@ public class ClienteService {
     }
 
     public Cliente create(ClienteDTO cliente) {
-        // salva o cliente no banco de dados, usando o nome e a senha do DTO, mas antes de salvar, é necessário criptografar a senha usando o BCryptPasswordEncoder
-        return clienteReporitory.save(new Cliente(cliente.nome(), bCryptPasswordEncoder.encode(cliente.password())));
+        // salva o cliente no banco de dados, usando o nome e a senha do DTO, mas antes
+        // de salvar, é necessário criptografar a senha usando o BCryptPasswordEncoder
+        return clienteReporitory.save(new Cliente(cliente.nome(), passwordEncoder.encode(cliente.password())));
     }
 
     public Cliente update(Long id, ClienteDTO cliente) {

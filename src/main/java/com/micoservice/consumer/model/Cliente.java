@@ -23,7 +23,7 @@ public class Cliente implements UserDetails {
     private String password;
     private RoleEnum role;
     // Um cliente pode ter muitos pedidos.
-    @OneToMany
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
     private List<Pedido> pedidos;
     private LocalDate created_at;
 
@@ -95,13 +95,15 @@ public class Cliente implements UserDetails {
             this.updated_at = LocalDate.now();
         }
     }
+
     public RoleEnum getRole() {
         return role;
     }
+
     public void setRole(RoleEnum role) {
         this.role = role;
     }
-    
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // se for admin, retorna as roles de admin e user, caso contrário, retorna
