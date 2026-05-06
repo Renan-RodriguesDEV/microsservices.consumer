@@ -1,15 +1,13 @@
 package com.micoservice.consumer.domain.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.micoservice.consumer.domain.dto.requests.ContaDTO;
 import com.micoservice.consumer.domain.dto.requests.TransacaoDTO;
-import com.micoservice.consumer.domain.dto.responses.ContaResponseDTO;
 import com.micoservice.consumer.domain.dto.responses.TransacaoResponseDTO;
-import com.micoservice.consumer.domain.dto.responses.UserResponseDTO;
 import com.micoservice.consumer.domain.model.Conta;
 import com.micoservice.consumer.domain.model.Transacao;
-import com.micoservice.consumer.domain.model.User;
 import com.micoservice.consumer.domain.repositories.TransacaoRepository;
 import com.micoservice.consumer.exceptions.ResourceNotFound;
 import com.micoservice.consumer.exceptions.UnauthorizedException;
@@ -28,6 +26,8 @@ public class TransacaoService {
         this.producer = producer;
     }
 
+    @Transactional // abre um bloco transacional para garantir que as operações de débito e crédito
+                   // sejam atômicas (ou seja, ou ambas ocorrem ou nenhuma ocorre)
     public TransacaoResponseDTO tranferir(TransacaoDTO data) {
         Conta origem = contaService.findById(data.idOrigem());
         Conta destino = contaService.findById(data.idDestino());
@@ -40,7 +40,8 @@ public class TransacaoService {
         }
         // cria transação
         Transacao transacao = new Transacao();
-        transacao.setConta(destino);
+        transacao.setOrigem(origem);
+        transacao.setDestino(destino);
         transacao.setValor(data.valor());
         transacao.setTipo(data.tipoTransacao());
 
@@ -53,13 +54,9 @@ public class TransacaoService {
         transacaoRepository.save(transacao);
 
         producer.send(transacao);
-        User user = origem.getUser();
-        UserResponseDTO userResponseDTO = new UserResponseDTO(user.getId(), user.getUsername(), user.getCreatedAt());
-        ContaResponseDTO origemResponse = new ContaResponseDTO(origem.getId(), origem.getSaldo(), userResponseDTO);
-        ContaResponseDTO destinoResponse = new ContaResponseDTO(destino.getId(), destino.getSaldo(), userResponseDTO);
 
-        TransacaoResponseDTO response = new TransacaoResponseDTO(origemResponse, destinoResponse, transacao.getValor(),
-                transacao.getTipo());
+        TransacaoResponseDTO response = new TransacaoResponseDTO(transacao.getId(), transacao.getValor(),
+                transacao.getTipo(), transacao.getOrigem(), transacao.getDestino());
         return response;
     }
 

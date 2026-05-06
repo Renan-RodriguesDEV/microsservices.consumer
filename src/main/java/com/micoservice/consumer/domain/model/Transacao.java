@@ -24,7 +24,9 @@ public class Transacao {
     @Enumerated(EnumType.STRING)
     private TipoTransacao tipo;
     @ManyToOne // muitas transações podem estar associadas a uma conta
-    private Conta conta;
+    private Conta origem;
+    @ManyToOne // muitas transações podem estar associadas a uma conta
+    private Conta destino;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -41,10 +43,11 @@ public class Transacao {
         this.tipo = tipo;
     }
 
-    public Transacao(Double valor, TipoTransacao tipo, Conta conta) {
+    public Transacao(Double valor, TipoTransacao tipo, Conta origem, Conta destino) {
         this.valor = valor;
         this.tipo = tipo;
-        this.conta = conta;
+        this.origem = origem;
+        this.destino = destino;
     }
 
     public Long getId() {
@@ -71,14 +74,6 @@ public class Transacao {
         this.tipo = tipo;
     }
 
-    public Conta getConta() {
-        return conta;
-    }
-
-    public void setConta(Conta conta) {
-        this.conta = conta;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -93,6 +88,22 @@ public class Transacao {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Conta getDestino() {
+        return destino;
+    }
+
+    public Conta getOrigem() {
+        return origem;
+    }
+
+    public void setDestino(Conta destino) {
+        this.destino = destino;
+    }
+
+    public void setOrigem(Conta origem) {
+        this.origem = origem;
     }
 
     @PrePersist

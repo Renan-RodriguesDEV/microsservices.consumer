@@ -1,7 +1,6 @@
 package com.micoservice.consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
@@ -11,9 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.micoservice.consumer.domain.dto.requests.ContaDTO;
 import com.micoservice.consumer.domain.dto.requests.UserLoginDTO;
 import com.micoservice.consumer.domain.model.Conta;
-import com.micoservice.consumer.domain.model.User;
-import com.micoservice.consumer.domain.repositories.ContaRepository;
-import com.micoservice.consumer.domain.repositories.UserRepository;
 import com.micoservice.consumer.domain.services.ContaService;
 import com.micoservice.consumer.domain.services.UserService;
 import com.micoservice.consumer.exceptions.AlreadyExists;
@@ -35,7 +31,7 @@ class ConsumerApplicationTests {
     @Test
     void testSaldoDaConta() {
         ContaDTO conta = new ContaDTO(10.0);
-        Conta createdConta = contaService.create(conta);
+        Conta createdConta = contaService.create(conta, 1L);
         assertEquals(conta.saldo(), createdConta.getSaldo());
     }
 }

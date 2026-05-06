@@ -21,7 +21,11 @@ public class TransacaoController {
 
     @PostMapping
     public ResponseEntity<TransacaoResponseDTO> transferir(@RequestBody TransacaoDTO transacao) {
-        return ResponseEntity.ok(transacaoService.tranferir(transacao));
+        TransacaoResponseDTO transacaoResponse = transacaoService.tranferir(transacao);
+        if (transacaoResponse == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(transacaoResponse);
     }
 
     // @GetMapping()

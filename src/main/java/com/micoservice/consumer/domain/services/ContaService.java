@@ -35,8 +35,17 @@ public class ContaService {
         return contaRepository.findAll();
     }
 
-    public Conta create(ContaDTO data) {
+    public Conta create(ContaDTO data, Long userId) {
         Conta conta = new Conta();
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            throw new ResourceNotFound("Usuário não encontrado");
+        }
+        if (user.getConta() != null) {
+            conta.setUser(null);
+        } else {
+            conta.setUser(user);
+        }
         conta.setSaldo(data.saldo());
         return contaRepository.save(conta);
     }

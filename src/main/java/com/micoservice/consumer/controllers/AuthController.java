@@ -33,7 +33,7 @@ public class AuthController {
         String token = userService.login(user);
         // retornar o token no header da resposta, para que o cliente possa usar esse
         // token
-        return ResponseEntity.ok().header("Authorization", token).build();
+        return ResponseEntity.ok(token);
     }
 
     @PostMapping("/register")

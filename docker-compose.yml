@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # PostgreSQL Database
+  # ============================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: microservice_postgres
+    environment:
+      POSTGRES_DB: microservice_consumer
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_INITDB_ARGS: "-c timezone=America/Sao_Paulo"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # ============================================================================
+  # RabbitMQ Message Broker
+  # ============================================================================
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: microservice_rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"      # AMQP port
+      - "15672:15672"    # Management UI port
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - app-network
+
+  # ============================================================================
+  # Consumer Application
+  # ============================================================================
+  consumer-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: microservice_consumer_app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/microservice_consumer
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      JWT_SECRET: sua-chave-super-secreta-em-producao-mudar
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/auth"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    networks:
+      - app-network
+    restart: unless-stopped
+
+# ============================================================================
+# Volumes for persistent data
+# ============================================================================
+volumes:
+  postgres_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+
+# ============================================================================
+# Network for inter-service communication
+# ============================================================================
+networks:
+  app-network:
+    driver: bridge

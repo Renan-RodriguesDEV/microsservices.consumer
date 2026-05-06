@@ -28,27 +28,40 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
-        return httpSecurity.csrf(csrf -> csrf.disable()) // desativa o csrf pq estamos usando token JWT, ou seja, não
-                // estamos usando sessões, então o csrf não é necessário
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/auth/**").permitAll()
-                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/openapi.json",
-                                "/openapi.yaml", "/webjars/swagger-ui/**")
-                        .permitAll()
-                        .anyRequest().authenticated() // todas as outras requisições precisam estar autenticadas, ou
-                // seja, precisam enviar um token JWT válido para acessar os
-                // recursos protegidos
+        try {
+            return httpSecurity.csrf(csrf -> csrf.disable()) // desativa o csrf pq estamos usando token JWT, ou seja,
+                                                             // não
+                    // estamos usando sessões, então o csrf não é necessário
+                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                    .authorizeHttpRequests(authorize -> authorize.requestMatchers(HttpMethod.POST, "/auth/**")
+                            .permitAll()
+                            .requestMatchers(HttpMethod.GET, "/auth/**").permitAll()
+                            .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/openapi.json",
+                                    "/openapi.yaml", "/webjars/swagger-ui/**")
+                            .permitAll()
+                            .anyRequest().authenticated() // todas as outras requisições precisam estar autenticadas, ou
+                    // seja, precisam enviar um token JWT válido para acessar os
+                    // recursos protegidos
 
-                )
-                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                    )
+                    .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                    .build();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            return null;
+        }
     }
 
     // Para obter o autenticador
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) {
-        return authenticationConfiguration.getAuthenticationManager();
+        try {
+            return authenticationConfiguration.getAuthenticationManager();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
     }
 
     // Para obter o encriptador de senhas

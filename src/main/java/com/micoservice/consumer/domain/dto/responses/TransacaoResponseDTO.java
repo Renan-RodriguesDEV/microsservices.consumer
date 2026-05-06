@@ -1,8 +1,9 @@
 package com.micoservice.consumer.domain.dto.responses;
 
 import com.micoservice.consumer.domain.dto.enums.TipoTransacao;
+import com.micoservice.consumer.domain.model.Conta;
 
 public record TransacaoResponseDTO(
-        ContaResponseDTO origem, ContaResponseDTO destino, Double valor, TipoTransacao tipoTransacao) {
-    
+                Long id, Double valor, TipoTransacao tipoTransacao, Conta origem, Conta destino) {
+
 }

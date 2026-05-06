@@ -1,5 +1,7 @@
 package com.micoservice.consumer.domain.dto.responses;
 
-public record ContaResponseDTO(Long id, Double saldo, UserResponseDTO user) {
+import com.micoservice.consumer.domain.model.User;
+
+public record ContaResponseDTO(Long id, Double saldo, User user) {
 
 }

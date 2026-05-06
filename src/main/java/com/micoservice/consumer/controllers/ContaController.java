@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.micoservice.consumer.domain.dto.requests.ContaDTO;
 import com.micoservice.consumer.domain.dto.responses.ContaResponseDTO;
-import com.micoservice.consumer.domain.dto.responses.UserResponseDTO;
 import com.micoservice.consumer.domain.model.Conta;
 import com.micoservice.consumer.domain.services.ContaService;
 
@@ -30,10 +29,9 @@ public class ContaController {
     @GetMapping("/{id}")
     public ResponseEntity<ContaResponseDTO> get(@PathVariable Long id) {
         Conta conta = contaService.findById(id);
-        UserResponseDTO user = new UserResponseDTO(conta.getUser().getId(), conta.getUser().getUsername(),
-                conta.getUser().getCreatedAt());
-        ContaResponseDTO response = new ContaResponseDTO(conta.getId(), conta.getSaldo(), user);
-        return ResponseEntity.ok(response);
+
+        ContaResponseDTO contaResponseDTO = new ContaResponseDTO(conta.getId(), conta.getSaldo(), conta.getUser());
+        return ResponseEntity.ok(contaResponseDTO);
     }
 
     @GetMapping
@@ -43,8 +41,7 @@ public class ContaController {
                 .map(c -> new ContaResponseDTO(
                         c.getId(),
                         c.getSaldo(),
-                        new UserResponseDTO(c.getUser().getId(), c.getUser().getUsername(),
-                                c.getUser().getCreatedAt())))
+                        c.getUser()))
                 .toList();
         return ResponseEntity.ok(responses);
     }
@@ -52,24 +49,17 @@ public class ContaController {
     @PutMapping("/{id}")
     public ResponseEntity<ContaResponseDTO> put(@PathVariable Long id, @RequestBody ContaDTO conta) {
         Conta updated = contaService.update(id, conta);
-        UserResponseDTO user = new UserResponseDTO(updated.getUser().getId(), updated.getUser().getUsername(),
-                updated.getUser().getCreatedAt());
-        ContaResponseDTO response = new ContaResponseDTO(updated.getId(), updated.getSaldo(), user);
+
+        ContaResponseDTO response = new ContaResponseDTO(updated.getId(), updated.getSaldo(), updated.getUser());
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping
-    public ResponseEntity<ContaResponseDTO> post(@RequestBody ContaDTO conta) {
-        Conta createdConta = contaService.create(conta);
-        UserResponseDTO user;
-        if (createdConta.getUser() != null) {
+    @PostMapping("/{id}")
+    public ResponseEntity<ContaResponseDTO> post(@PathVariable Long id, @RequestBody ContaDTO conta) {
+        Conta createdConta = contaService.create(conta, id);
 
-            user = new UserResponseDTO(createdConta.getUser().getId(), createdConta.getUser().getUsername(),
-                    createdConta.getUser().getCreatedAt());
-        } else {
-            user = null;
-        }
-        ContaResponseDTO response = new ContaResponseDTO(createdConta.getId(), createdConta.getSaldo(), user);
+        ContaResponseDTO response = new ContaResponseDTO(createdConta.getId(), createdConta.getSaldo(),
+                createdConta.getUser());
         return ResponseEntity.ok(response);
     }
 
