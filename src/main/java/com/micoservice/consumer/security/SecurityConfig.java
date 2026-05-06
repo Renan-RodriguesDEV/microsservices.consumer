@@ -32,14 +32,13 @@ public class SecurityConfig {
                 // estamos usando sessões, então o csrf não é necessário
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize.requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/auth").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/auth/**").permitAll()
-                                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/openapi.json",
-                                        "/openapi.yaml", "/webjars/swagger-ui/**")
-                                .permitAll()
-                                .anyRequest().authenticated() // todas as outras requisições precisam estar autenticadas, ou
-                        // seja, precisam enviar um token JWT válido para acessar os
-                        // recursos protegidos
+                        .requestMatchers(HttpMethod.GET, "/auth/**").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/openapi.json",
+                                "/openapi.yaml", "/webjars/swagger-ui/**")
+                        .permitAll()
+                        .anyRequest().authenticated() // todas as outras requisições precisam estar autenticadas, ou
+                // seja, precisam enviar um token JWT válido para acessar os
+                // recursos protegidos
 
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

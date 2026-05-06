@@ -1,4 +1,4 @@
-package com.micoservice.consumer.dto;
+package com.micoservice.consumer.domain.dto.enums;
 
 public enum RoleEnum {
     ADMIN("admin"), USER("user");

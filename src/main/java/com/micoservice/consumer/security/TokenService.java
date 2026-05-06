@@ -1,18 +1,17 @@
 package com.micoservice.consumer.security;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
+import java.time.Instant;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 
 @Service
 public class TokenService {
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret:mysecretkey}")
     private String secretKey;
 
     // Gerar um token JWT para um usuário específico
@@ -45,6 +44,7 @@ public class TokenService {
     // Gerar um data de expiração para o token, por exemplo, 1 hora a partir do
     // momento da geração
     private Instant generateExpirationDate() {
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+        long expirationTimesInSeconds = (60 * 60) * 24; // 24 horas
+        return Instant.now().plusSeconds(expirationTimesInSeconds);
     }
 }

@@ -1,38 +1,41 @@
 package com.micoservice.consumer;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.micoservice.consumer.dto.ClienteLoginDTO;
-import com.micoservice.consumer.model.Cliente;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.web.client.RestTemplate;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+import com.micoservice.consumer.domain.dto.requests.ContaDTO;
+import com.micoservice.consumer.domain.dto.requests.UserLoginDTO;
+import com.micoservice.consumer.domain.model.Conta;
+import com.micoservice.consumer.domain.model.User;
+import com.micoservice.consumer.domain.repositories.ContaRepository;
+import com.micoservice.consumer.domain.repositories.UserRepository;
+import com.micoservice.consumer.domain.services.ContaService;
+import com.micoservice.consumer.domain.services.UserService;
+import com.micoservice.consumer.exceptions.AlreadyExists;
+
+@SpringBootTest
 class ConsumerApplicationTests {
 
-    @LocalServerPort
-    private int port;
-
-    private RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private ContaService contaService;
 
     @Test
-    void testGetRouter() {
+    void testCreateUser() {
 
-        String url = "http://localhost:" + port + "/auth";
-
-        var response = restTemplate.getForObject(url, String.class);
-
-        assertNotNull(response);
+        assertThrows(AlreadyExists.class, () -> userService.register(new UserLoginDTO("tester", "1234")));
     }
 
     @Test
-    void TestRegisterUser() {
-        String url = "http://localhost:" + port + "/auth/register";
-
-        var response = restTemplate.postForObject(url, new ClienteLoginDTO("Novo", "123"), Cliente.class);
-
-        assertNotNull(response);
+    void testSaldoDaConta() {
+        ContaDTO conta = new ContaDTO(10.0);
+        Conta createdConta = contaService.create(conta);
+        assertEquals(conta.saldo(), createdConta.getSaldo());
     }
 }
