@@ -1,23 +1,21 @@
 package com.micoservice.consumer.security;
 
-import java.io.IOException;
-
+import com.micoservice.consumer.repositories.ClienteRepository;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.micoservice.consumer.repositories.ClienteRepository;
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Component // vai ser injetado no contexto do Spring, ou seja, ele vai ser criado e
-           // gerenciado pelo Spring, isso é necessário para que ele seja reconhecido como
-           // um filtro de segurança e possa ser aplicado nas requisições
+// gerenciado pelo Spring, isso é necessário para que ele seja reconhecido como
+// um filtro de segurança e possa ser aplicado nas requisições
 public class SecurityFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;

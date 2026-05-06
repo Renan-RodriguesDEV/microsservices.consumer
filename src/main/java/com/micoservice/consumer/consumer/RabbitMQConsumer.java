@@ -1,9 +1,6 @@
 package com.micoservice.consumer.consumer;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import com.micoservice.consumer.model.Pedido;
@@ -18,8 +15,5 @@ public class RabbitMQConsumer {
 
     }
 
-    @Bean
-    MessageConverter messageConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
+
 }

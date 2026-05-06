@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,13 +42,18 @@ public class AuthController {
         this.rabbitTemplate = rabbitTemplate;
     }
 
+    @GetMapping
+    public ResponseEntity<String> get() {
+        return ResponseEntity.ok("Rota de autenticação funcionando!!");
+    }
+
     @PostMapping("login")
-    public ResponseEntity login(@Valid @RequestBody ClienteLoginDTO cliente) {
+    public ResponseEntity<String> login(@Valid @RequestBody ClienteLoginDTO cliente) {
         System.out.println("Chamando rota de login");
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 cliente.name(),
                 cliente.password());
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        authenticationManager.authenticate(authenticationToken);
         String token = tokenService.generateToken(cliente.name());
         System.out.println("Token gerado com sucesso!!");
         return ResponseEntity.ok().header("Authorization", token).build();
