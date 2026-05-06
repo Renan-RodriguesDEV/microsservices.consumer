@@ -5,20 +5,20 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.micoservice.consumer.repositories.ClienteRepository;
+import com.micoservice.consumer.domain.repositories.UserRepository;
 
 @Service
 public class AuthConfig implements UserDetailsService {
 
-    public final ClienteRepository clienteRepository;
+    public final UserRepository clienteRepository;
 
-    public AuthConfig(ClienteRepository clienteRepository) {
+    public AuthConfig(UserRepository clienteRepository) {
         this.clienteRepository = clienteRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return clienteRepository.findByName(username);
+        return clienteRepository.findByUsername(username);
     }
 
 }

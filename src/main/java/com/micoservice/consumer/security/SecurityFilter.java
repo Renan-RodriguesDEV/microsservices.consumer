@@ -1,6 +1,6 @@
 package com.micoservice.consumer.security;
 
-import com.micoservice.consumer.repositories.ClienteRepository;
+import com.micoservice.consumer.domain.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,9 +19,9 @@ import java.io.IOException;
 public class SecurityFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
-    private final ClienteRepository clienteRepository;
+    private final UserRepository clienteRepository;
 
-    public SecurityFilter(TokenService tokenService, ClienteRepository clienteRepository) {
+    public SecurityFilter(TokenService tokenService, UserRepository clienteRepository) {
         this.tokenService = tokenService;
         this.clienteRepository = clienteRepository;
     }
@@ -38,7 +38,7 @@ public class SecurityFilter extends OncePerRequestFilter {
                 // validar o token
                 String name = tokenService.validadeToken(token);
                 // Pega o cliente do banco de dados usando o nome do usuário extraído do token
-                UserDetails userDetails = clienteRepository.findByName(name);
+                UserDetails userDetails = clienteRepository.findByUsername(name);
                 if (userDetails != null) {
                     // Criar um objeto de autenticação do Spring Security corretamente:
                     // - principal: nome do usuário
