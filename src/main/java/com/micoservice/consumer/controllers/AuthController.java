@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.micoservice.consumer.domain.dto.requests.UserLoginDTO;
+import com.micoservice.consumer.domain.dto.responses.UserResponseDTO;
 import com.micoservice.consumer.domain.model.User;
 import com.micoservice.consumer.domain.services.UserService;
 
@@ -36,9 +37,10 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@Valid @RequestBody UserLoginDTO data) {
+    public ResponseEntity<UserResponseDTO> register(@Valid @RequestBody UserLoginDTO data) {
 
         User user = userService.register(data);
-        return ResponseEntity.ok(user);
+        UserResponseDTO response = new UserResponseDTO(user.getId(), user.getUsername(), user.getCreatedAt());
+        return ResponseEntity.ok(response);
     }
 }
