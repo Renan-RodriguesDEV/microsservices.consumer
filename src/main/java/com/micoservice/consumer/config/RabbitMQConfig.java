@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 // classe de config do RabbitMQ, onde é criado a fila e o conversor de mensagens
 // Resumo do que é @Configuration & @Bean: São anotações do Spring Framework usadas para configurar e gerenciar beans (objetos) dentro do contexto da aplicação. @Configuration indica que a classe contém definições de beans, enquanto @Bean é usada para marcar métodos que retornam objetos que devem ser gerenciados pelo Spring, permitindo a injeção de dependências e a configuração centralizada dos componentes da aplicação.
 @Configuration
@@ -24,7 +23,6 @@ public class RabbitMQConfig {
         return new Queue(queue, true);
     }
 
-    @SuppressWarnings("removal")
     @Bean
     MessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();

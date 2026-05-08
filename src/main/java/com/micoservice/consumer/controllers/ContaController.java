@@ -30,19 +30,17 @@ public class ContaController {
     public ResponseEntity<ContaResponseDTO> get(@PathVariable Long id) {
         Conta conta = contaService.findById(id);
 
-        ContaResponseDTO contaResponseDTO = new ContaResponseDTO(conta.getId(), conta.getSaldo(), conta.getUser());
+        ContaResponseDTO contaResponseDTO = ContaResponseDTO.fromEntity(conta);
         return ResponseEntity.ok(contaResponseDTO);
     }
 
     @GetMapping
     public ResponseEntity<List<ContaResponseDTO>> get() {
         List<Conta> contas = contaService.findAll();
-        List<ContaResponseDTO> responses = contas.stream()
-                .map(c -> new ContaResponseDTO(
-                        c.getId(),
-                        c.getSaldo(),
-                        c.getUser()))
-                .toList();
+        List<ContaResponseDTO> responses = List.of();
+        for (Conta conta : contas) {
+            responses.add(ContaResponseDTO.fromEntity(conta));
+        }
         return ResponseEntity.ok(responses);
     }
 
@@ -50,7 +48,7 @@ public class ContaController {
     public ResponseEntity<ContaResponseDTO> put(@PathVariable Long id, @RequestBody ContaDTO conta) {
         Conta updated = contaService.update(id, conta);
 
-        ContaResponseDTO response = new ContaResponseDTO(updated.getId(), updated.getSaldo(), updated.getUser());
+        ContaResponseDTO response = ContaResponseDTO.fromEntity(updated);
         return ResponseEntity.ok(response);
     }
 
@@ -58,8 +56,7 @@ public class ContaController {
     public ResponseEntity<ContaResponseDTO> post(@PathVariable Long id, @RequestBody ContaDTO conta) {
         Conta createdConta = contaService.create(conta, id);
 
-        ContaResponseDTO response = new ContaResponseDTO(createdConta.getId(), createdConta.getSaldo(),
-                createdConta.getUser());
+        ContaResponseDTO response = ContaResponseDTO.fromEntity(createdConta);
         return ResponseEntity.ok(response);
     }
 

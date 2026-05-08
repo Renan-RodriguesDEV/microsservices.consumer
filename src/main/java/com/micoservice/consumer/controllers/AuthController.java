@@ -40,7 +40,7 @@ public class AuthController {
     public ResponseEntity<UserResponseDTO> register(@Valid @RequestBody UserLoginDTO data) {
 
         User user = userService.register(data);
-        UserResponseDTO response = new UserResponseDTO(user.getId(), user.getUsername(), user.getCreatedAt());
+        UserResponseDTO response = UserResponseDTO.fromEntity(user);
         return ResponseEntity.ok(response);
     }
 }

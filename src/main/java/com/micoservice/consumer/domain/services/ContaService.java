@@ -5,6 +5,7 @@ import com.micoservice.consumer.domain.model.Conta;
 import com.micoservice.consumer.domain.model.User;
 import com.micoservice.consumer.domain.repositories.ContaRepository;
 import com.micoservice.consumer.domain.repositories.UserRepository;
+import com.micoservice.consumer.exceptions.AlreadyExists;
 import com.micoservice.consumer.exceptions.ResourceNotFound;
 import com.micoservice.consumer.exceptions.UnauthorizedException;
 
@@ -42,10 +43,9 @@ public class ContaService {
             throw new ResourceNotFound("Usuário não encontrado");
         }
         if (user.getConta() != null) {
-            conta.setUser(null);
-        } else {
-            conta.setUser(user);
+            throw new AlreadyExists("Usuário já possui uma conta");
         }
+        conta.setUser(user);
         conta.setSaldo(data.saldo());
         return contaRepository.save(conta);
     }

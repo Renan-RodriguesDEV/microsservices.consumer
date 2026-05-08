@@ -55,8 +55,7 @@ public class TransacaoService {
 
         producer.send(transacao);
 
-        TransacaoResponseDTO response = new TransacaoResponseDTO(transacao.getId(), transacao.getValor(),
-                transacao.getTipo(), transacao.getOrigem(), transacao.getDestino());
+        TransacaoResponseDTO response = TransacaoResponseDTO.fromEntity(transacao);
         return response;
     }
 

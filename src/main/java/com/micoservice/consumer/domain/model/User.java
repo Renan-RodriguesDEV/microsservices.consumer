@@ -27,7 +27,8 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
     // Um user pode ter apenas uma conta.
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user") // mappedBy indica que a relação é mapeada pelo campo "user" da classe Conta, ou
+                                 // seja, a classe Conta é a dona da relação
     private Conta conta;
     private LocalDate createdAt;
     private LocalDate updatedAt;

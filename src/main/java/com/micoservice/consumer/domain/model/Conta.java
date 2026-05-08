@@ -15,7 +15,7 @@ public class Conta {
 
     @OneToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnore
+    @JsonIgnore // Evita a serialização do campo user para evitar recursão infinita
     private User user;
     private LocalDate createdAt;
     private LocalDate updatedAt;

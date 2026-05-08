@@ -2,17 +2,13 @@ package com.micoservice.consumer.domain.services;
 
 import java.util.List;
 
-import com.micoservice.consumer.domain.dto.enums.RoleEnum;
-import com.micoservice.consumer.domain.dto.requests.UserLoginDTO;
-import com.micoservice.consumer.domain.model.Conta;
-import com.micoservice.consumer.domain.model.User;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.micoservice.consumer.domain.repositories.ContaRepository;
+import com.micoservice.consumer.domain.dto.requests.UserLoginDTO;
+import com.micoservice.consumer.domain.model.User;
 import com.micoservice.consumer.domain.repositories.UserRepository;
 import com.micoservice.consumer.exceptions.AlreadyExists;
 import com.micoservice.consumer.exceptions.ResourceNotFound;
@@ -21,7 +17,6 @@ import com.micoservice.consumer.security.TokenService;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final ContaRepository contaRepository;
     private final PasswordEncoder passwordEncoder;
     // injeção do AuthenticationManager para autenticar os clientes no endpoint de
     // login
@@ -29,10 +24,9 @@ public class UserService {
     // injeção do TokenService para gerar tokens JWT
     private final TokenService tokenService;
 
-    public UserService(UserRepository userRepository, ContaRepository contaRepository,
+    public UserService(UserRepository userRepository,
             PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, TokenService tokenService) {
         this.userRepository = userRepository;
-        this.contaRepository = contaRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
@@ -53,18 +47,20 @@ public class UserService {
         User user = new User();
         user.setUsername(data.username());
         user.setPassword(passwordEncoder.encode(data.password()));
-        user.setRole(RoleEnum.USER);
+        user.setRole(data.role());
 
         // Salvar User PRIMEIRO
         user = userRepository.save(user);
 
-        // DEPOIS associar à Conta
-        Conta conta = new Conta();
-        conta.setSaldo(0.0);
-        conta.setUser(user);
-        contaRepository.save(conta);
-
         return user;
+    }
+
+    public User create(User user) {
+        if (userRepository.findByUsername(user.getUsername()) != null) {
+            throw new AlreadyExists("Usuario já existe");
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
     }
 
     public User update(Long id, UserLoginDTO data) {
