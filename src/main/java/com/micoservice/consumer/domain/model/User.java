@@ -1,20 +1,18 @@
 package com.micoservice.consumer.domain.model;
 
+import com.micoservice.consumer.domain.dto.enums.RoleEnum;
 import jakarta.persistence.*;
-
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.micoservice.consumer.domain.dto.enums.RoleEnum;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "users") // "user" é uma palavra reservada no SQL, então é melhor usar outro nome para a
-                       // tabela
+// tabela
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,10 +26,10 @@ public class User implements UserDetails {
     private RoleEnum role;
     // Um user pode ter apenas uma conta.
     @OneToOne(mappedBy = "user") // mappedBy indica que a relação é mapeada pelo campo "user" da classe Conta, ou
-                                 // seja, a classe Conta é a dona da relação
+    // seja, a classe Conta é a dona da relação
     private Conta conta;
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public User(String username) {
         this.username = username;
@@ -83,32 +81,32 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate created_at) {
+    public void setCreatedAt(LocalDateTime created_at) {
         this.createdAt = created_at;
     }
 
-    public LocalDate getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDate updated_at) {
+    public void setUpdatedAt(LocalDateTime updated_at) {
         this.updatedAt = updated_at;
     }
 
     @PrePersist
     private void prePersist() {
         if (this.createdAt == null) {
-            this.createdAt = LocalDate.now();
+            this.createdAt = LocalDateTime.now();
         }
     }
 
     @PreUpdate
     private void preUpdate() {
-        this.updatedAt = LocalDate.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public RoleEnum getRole() {

@@ -13,6 +13,8 @@ import com.micoservice.consumer.exceptions.ResourceNotFound;
 import com.micoservice.consumer.exceptions.UnauthorizedException;
 import com.micoservice.consumer.messaging.producer.Producer;
 
+import java.time.LocalDateTime;
+
 @Service
 public class TransacaoService {
     private final TransacaoRepository transacaoRepository;
@@ -52,8 +54,12 @@ public class TransacaoService {
         contaService.update(destino.getId(), new ContaDTO(novo_saldo_destino));
 
         transacaoRepository.save(transacao);
-
-        producer.send(transacao);
+        if (data.valor()>=origem.getSaldo()) {
+            producer.send("Tentativa de sacar tudo!! possivel fraude");
+        }
+        else if (data.valor()>=5000. && (LocalDateTime.now().getHour()>22 &&  LocalDateTime.now().getHour()<6) ){
+            producer.send("Tentativa de saque fora do horario comercial!! possivel fraude");
+        }
 
         TransacaoResponseDTO response = TransacaoResponseDTO.fromEntity(transacao);
         return response;
