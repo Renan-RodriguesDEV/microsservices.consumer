@@ -1,9 +1,13 @@
 package com.micoservice.consumer.domain.services;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.micoservice.consumer.domain.dto.enums.FraudType;
 import com.micoservice.consumer.domain.dto.requests.ContaDTO;
+import com.micoservice.consumer.domain.dto.requests.FraudAnalysisDTO;
 import com.micoservice.consumer.domain.dto.requests.TransacaoDTO;
 import com.micoservice.consumer.domain.dto.responses.TransacaoResponseDTO;
 import com.micoservice.consumer.domain.model.Conta;
@@ -12,8 +16,6 @@ import com.micoservice.consumer.domain.repositories.TransacaoRepository;
 import com.micoservice.consumer.exceptions.ResourceNotFound;
 import com.micoservice.consumer.exceptions.UnauthorizedException;
 import com.micoservice.consumer.messaging.producer.Producer;
-
-import java.time.LocalDateTime;
 
 @Service
 public class TransacaoService {
@@ -54,11 +56,13 @@ public class TransacaoService {
         contaService.update(destino.getId(), new ContaDTO(novo_saldo_destino));
 
         transacaoRepository.save(transacao);
-        if (data.valor()>=origem.getSaldo()) {
-            producer.send("Tentativa de sacar tudo!! possivel fraude");
-        }
-        else if (data.valor()>=5000. && (LocalDateTime.now().getHour()>22 &&  LocalDateTime.now().getHour()<6) ){
-            producer.send("Tentativa de saque fora do horario comercial!! possivel fraude");
+        if (data.valor() >= origem.getSaldo()) {
+            FraudAnalysisDTO msg = new FraudAnalysisDTO(transacao.getId(), FraudType.SAQUE_SUSPEITO);
+            producer.send(msg);
+        } else if (data.valor() >= 5000. && (LocalDateTime.now().getHour() > 22 && LocalDateTime.now().getHour() < 6)) {
+
+            FraudAnalysisDTO msg = new FraudAnalysisDTO(transacao.getId(), FraudType.FORA_DE_HORA);
+            producer.send(msg);
         }
 
         TransacaoResponseDTO response = TransacaoResponseDTO.fromEntity(transacao);
